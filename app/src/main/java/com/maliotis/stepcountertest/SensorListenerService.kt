@@ -55,20 +55,21 @@ class SensorListenerService : Service() {
         return if (hours == 0 && minutes < 10 && getDayDifference(calendar.time, applicationContext, 2L)) {
 
             // logic
-            //0: BootSteps = 0, todays = 0, yesterdays = 0, oldTotalSteps = 0
-            //1: BootSteps = 1000, todays = 1000, yesterdays = 0, oldTotalSteps = 0
-            //2: BootSteps = 2300, todays =1300, yesterdays = 1000, oldTotalSteps = 1000
-            //3: BootSteps = 3000, todays = 700, yesterdays = 1300, oldTotalSteps = 2300
-            //4: BootSteps = 4000, todays = 1000, yesterdays = 700, oldTotalSteps = 3000
+            //0: currentTotal = 0, todays = 0, yesterdays = 0, oldTotalSteps = 0
+            //1: currentTotal = 1000, todays = 1000, yesterdays = 0, oldTotalSteps = 0
+            //2: currentTotal = 2300, todays = 1300, yesterdays = 1000, oldTotalSteps = 1000
+            //3: currentTotal = 3000, todays = 700, yesterdays = 1300, oldTotalSteps = 2300
+            //4: currentTotal = 4000, todays = 1000, yesterdays = 700, oldTotalSteps = 3000
 
 
             //yesterdays = todays
-            //todays = BootSteps - prevBootSteps
-            //prevBootSteps = BootSteps
+            //todays = currentTotal - oldTotalSteps
+            //oldTotalSteps = currentTotal
 
             val todaysSteps = getTodaysSteps(applicationContext)
             writeYesterdaysSteps(applicationContext, todaysSteps)
             val newTodaysSteps = steps - getOldTotalSteps(applicationContext)
+            writeTodaysSteps(applicationContext, newTodaysSteps)
             writeOldTotalSteps(applicationContext, steps)
 
 
@@ -170,10 +171,12 @@ class SensorListenerService : Service() {
 
         // enable batching with delay of max 5 min
         val stepSensor = sm.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        sm.registerListener(stepSensorImpl, stepSensor, SENSOR_DELAY_NORMAL, 60000000 * 5)
+        sm.registerListener(stepSensorImpl, stepSensor, SENSOR_DELAY_NORMAL, fiveMinInMicroS)
     }
 
     companion object {
+        const val fiveMinInMicroS = 60000000 * 5
+
         const val NOTIFICATION_ID = 1
         private var steps = 0
 

@@ -1,12 +1,13 @@
 package com.maliotis.stepcountertest
 
+import android.app.AlarmManager
 import android.content.Context
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun Date.getYesterdaysDate(): Date {
-    return Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
+    return Date(System.currentTimeMillis() - AlarmManager.INTERVAL_DAY)
 }
 
 fun Date.toCalendar(): Calendar {

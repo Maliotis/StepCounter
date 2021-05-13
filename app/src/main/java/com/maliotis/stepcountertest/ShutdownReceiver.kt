@@ -7,6 +7,7 @@ import android.content.Intent
 
 class ShutdownReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
-        context.startService(Intent(context, SensorListenerService::class.java))
+        // Add custom logic
+        // context.startService(Intent(context, SensorListenerService::class.java))
     }
 }

@@ -82,11 +82,19 @@ class MainActivity : AppCompatActivity() {
         //startService()
 
         // restart service every hour to save the current step count
-        val nextUpdate: Long = Calendar.getInstance().apply {
+        val nextUpdateCalendar: Long = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 1)
         }.timeInMillis
+
+        //double check the date is in the future
+        if (nextUpdateCalendar > System.currentTimeMillis()) {
+            Log.d(TAG, "onCreate: date is in the future :)")
+        } else {
+            Log.d(TAG, "onCreate: date is in the past :(")
+        }
+
         val am = applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
         val pi = PendingIntent
             .getService(
@@ -96,9 +104,10 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= 23) {
             //am.setAndAllowWhileIdle(AlarmManager.RTC, nextUpdate, pi)
-            am.setRepeating(AlarmManager.RTC_WAKEUP, nextUpdate, 1000 * 60 * 60 * 24, pi)
+
+            am.setRepeating(AlarmManager.RTC_WAKEUP, nextUpdateCalendar, AlarmManager.INTERVAL_DAY, pi)
         } else {
-            am[AlarmManager.RTC_WAKEUP, nextUpdate] = pi
+            am[AlarmManager.RTC_WAKEUP, nextUpdateCalendar] = pi
         }
 
     }
